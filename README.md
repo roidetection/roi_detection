@@ -19,66 +19,48 @@ Automated region of interest detection in histopathological image analysis is a 
 ### 2. Code Base Structure
 The code base structure is explained below: 
 - **create_patches.py**: extract patches from whole slide images (.svs). If annotations are provided, patches inside annotated regions will be generated. If annotations are not available, contour detection will be performed and all patches inside contour will be generated.
-- **extract_patches.py**: split annotated patches into training, testing and validation.
-- **method.py**: train patch classification model on annotated patches.
+- **split_patches.py**: split annotated patches into training, testing and validation.
+- **train.py**: train patch classification model on annotated patches.
 - **score.py**: compute predicted scores for all patches from WSI with trained model.
 - **visual.py**: generate visualization maps.
 
-The directory structure for your multimodal dataset should look similar to the following:
-```bash
-./
-├── data
-      └── PROJECT
-            ├── INPUT A (e.g. Image)
-                ├── image_001.png
-                ├── image_002.png
-                ├── ...
-            ├── INPUT B (e.g. Graph)
-                ├── image_001.pkl
-                ├── image_002.pkl
-                ├── ...
-            └── INPUT C (e.g. Genomic)
-                └── genomic_data.csv
-└── checkpoints
-        └── PROJECT
-            ├── TASK X (e.g. Survival Analysis)
-                ├── path
-                    ├── ...
-                ├── ...
-            └── TASK Y (e.g. Grade Classification)
-                ├── path
-                    ├── ...
-                ├── ...
-```
+You need to generate a csv file that contains 'slide_id', 'data_split', 'label' for training the model.
 
-Depending on which modalities you are interested in combining, you must: (1) write your own function for aligning multimodal data in **make_splits.py**, (2) create your DatasetLoader in **data_loaders.py**, (3) modify the **options.py** for your data and task. Models will be saved to the **checkpoints** directory, with each model for each task saved in its own directory. At the moment, the only supervised learning tasks implemented are survival outcome prediction and grade classification.
+### 3. Training and Detection
+Here are example commands for training patch classification model and performing ROI detection.
 
-### 3. Training and Evaluation
-Here are example commands for training unimodal + multimodal networks.
-
-#### Survival Model for Input A
-Example shown below for training a survival model for mode A and saving the model checkpoints + predictions at the end of each split. In this example, we would create a folder called "CNN_A" in "./checkpoints/example/" for all the models in cross-validation. It assumes that "A" is defined as a mode in **dataset_loaders.py** for handling modality-specific data-preprocessing steps (random crop + flip + jittering for images), and that there is a network defined for input A in **networks.py**. "surv" is already defined as a task for training networks for survival analysis in **options.py, networks.py, train_test.py, train_cv.py**.
-
+#### Train Patch Classification Model
+Step 1: extracting patches from whole slide images with annotation files (.xml). Depending on the annotations, the extracted patches may belong to different classes.
 ```
-python train_cv.py --exp_name surv --dataroot ./data/example/ --checkpoints_dir ./checkpoints/example/ --task surv --mode A --model_name CNN_A --niter 0 --niter_decay 50 --batch_size 64 --reg_type none --init_type max --lr 0.002 --weight_decay 4e-4 --gpu_ids 0
+python create_patches.py --source PATH_TO_WSI --save_dir PATH_TO_SAVE_ANNOTATED_PATCHES --xml_dir PATH_TO_XML --patch --xml
 ```
-To obtain test predictions on only the test splits in your cross-validation, you can replace "train_cv" with "test_cv".
+Step 2: saving patches to corresponding directories (train/val/test) based on csv file.
 ```
-python test_cv.py --exp_name surv --dataroot ./data/example/ --checkpoints_dir ./checkpoints/example/ --task surv --mode input_A --model input_A_CNN --niter 0 --niter_decay 50 --batch_size 64 --reg_type none --init_type max --lr 0.002 --weight_decay 4e-4 --gpu_ids 0
+python split_patches.py --data_dir PATH_TO_SAVE_MEL/NEVI_PATCHES/patches --other_patches_dir PATH_TO_SAVE_OTHER_PATCHES/patches --csv_path PATH_TO_CSV --feat_dir PATH_TO_SAVE_FEATURES
 ```
-
-#### Grade Classification Model for Input A + B
-Example shown below for training a grade classification model for fusing modes A and B. Similar to the previous example, we would create a folder called "Fusion_AB" in "./checkpoints/example/" for all the models in cross-validation. It assumes that "AB" is defined as a mode in **dataset_loaders.py** for handling multiple inputs A and B at the same time. "grad" is already defined as a task for training networks for grade classification in **options.py, networks.py, train_test.py, train_cv.py**.
+Step 3: train patch classification model.
 ```
-python train_cv.py --exp_name surv --dataroot ./data/example/ --checkpoints_dir ./checkpoints/example/ --task grad --mode AB --model_name Fusion_AB --niter 0 --niter_decay 50 --batch_size 64 --reg_type none --init_type max --lr 0.002 --weight_decay 4e-4 --gpu_ids 0
+python train.py --exp_name 'pcla_3class' --data_folder PATH_TO_SAVE_FEATURESs --batch_size 256 --n_epochs 20
 ```
-
+#### Region of Interest Detection
+Step 1: extracting patches from whole slide images without using annotations. (Testing)
+```
+python create_patches.py --source PATH_TO_WSI --save_dir PATH_TO_ALL_PATCHES --patch --seg
+```
+Step 2: calculate predicted scores for all extracted patches.
+```
+python score.py --exp_name 'pcla_3class' --auto_skip --model_load TRAINED_MODEL --csv_path PATH_TO_CSV --patch_path PATH_TO_ALL_PATCHES --results_dir PATH_TO_SAVE_RESULTS --classification_save_dir PATH_TO_SAVE_CLASSIFICATION_RESULTS
+```
+Step 3: generate visualization maps.
+```
+python visual.py --exp_name 'pcla_3class' --csv_path PATH_TO_CSV --wsi_dir PATH_TO_WSI --results_dir PATH_TO_SAVE_RESULTS --xml_dir PATH_TO_GROUND_TRUTH_LABELS
+```
 ## Reproducibility
-To reporduce the results in our paper and for exact data preprocessing, implementation, and experimental details please follow the instructions here: [./data/TCGA_GBMLGG/](https://github.com/mahmoodlab/PathomicFusion/tree/master/data/TCGA_GBMLGG). Processed data and trained models can be downloaded [here](https://drive.google.com/drive/folders/1swiMrz84V3iuzk8x99vGIBd5FCVncOlf?usp=sharing).
+The melanocytic skin tumor dataset will be made public in the future. To reproduce the results on TCGA-SKCM dataset, the pretrained model is available at [model]().
 
 ## Issues
 - Please report all issues on the public forum.
 
 ## Acknowledgments
-- This code of patch extraction is inspired by [CLAM](https://github.com/huangzhii/SALMON).
+- This code of patch extraction is inspired by [CLAM](https://github.com/mahmoodlab/CLAM).
 
