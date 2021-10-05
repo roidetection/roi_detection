@@ -31,7 +31,11 @@ parser.add_argument('--annotation_ratio', type=float, default=0.5,
 parser.add_argument('--heatmap', default=False, action='store_true')
 parser.add_argument('--boundary', default=False, action='store_true')
 parser.add_argument('--auto_skip', default=False, action='store_true')
+parser.add_argument('--no_xml', default=False, action='store_true')
+parser.add_argument('--percent', type=float, default=0.2, help='top percentage of visualization')
 args = parser.parse_args()
+args.results_dir = os.path.join(args.results_dir, args.exp_name)
+print(args)
 device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # map vips formats to np dtypes
@@ -248,17 +252,22 @@ def get_visual(wsi_dir, score_save_dir, overlay_save_dir, args):
         if args.auto_skip and os.path.isfile(outputPath):
             print('{} already exist in destination location, skipped'.format(slide_id))
             continue
-
-        xml_path = os.path.join(args.xml_dir,slide_id+'.xml')
+        
+        if not args.no_xml:
+            xml_path = os.path.join(args.xml_dir,slide_id+'.xml')
         hdf5_file_path = os.path.join(score_save_dir, slide_id+'.h5')
         
         ### Read image ###
         wsi_image_path = os.path.join(wsi_dir, slide_id + '.svs')
         original_image = imopen(wsi_image_path)
-                
-        mask = makemask(original_image.height, original_image.width, xml_path)
         
-        percent = get_percent(hdf5_file_path, mask)
+        if not args.no_xml:                
+            mask = makemask(original_image.height, original_image.width, xml_path)
+        
+        if not args.no_xml:           
+            percent = get_percent(hdf5_file_path, mask)
+        else:
+            percent = args.percent
         
             
         start = time.time()        
@@ -305,14 +314,15 @@ def get_visual(wsi_dir, score_save_dir, overlay_save_dir, args):
                 a = colorvalue[i] ### color value
                 p = coords[i]  ### patch coord
                 p = p.astype('int32')
-                img_mask = mask[p[1]:(p[1] + args.patch_size),p[0]:p[0] + args.patch_size]
-                inregion = checkinout(img_mask, args.annotation_ratio)
-                if inregion:
-                    num_inregion += 1
+                if not args.no_xml:
+                    img_mask = mask[p[1]:(p[1] + args.patch_size),p[0]:p[0] + args.patch_size]
+                    inregion = checkinout(img_mask, args.annotation_ratio)
+                    if inregion:
+                        num_inregion += 1
                 if a == label:
                     num_highlight += 1
                     big_mask[p[1]:p[1]+args.patch_size, p[0]:p[0]+args.patch_size,:]=original_array[p[1]:p[1]+args.patch_size, p[0]:p[0]+args.patch_size,:]
-                    if inregion:
+                    if inregion and not args.no_xml:
                         num_inregion_highlight += 1    
             log_patches_count(logfname, slide_id, colorvalue.shape[0], num_inregion_highlight, num_inregion, num_highlight)
             print("{},num_pat={},num_IH={},num_I={},num_H={}".format(slide_id, colorvalue.shape[0], num_inregion_highlight, 
