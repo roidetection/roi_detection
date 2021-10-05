@@ -57,7 +57,7 @@ python visual.py --exp_name 'pcla_3class' --csv_path PATH_TO_CSV --wsi_dir PATH_
 ```
 By setting `--heatmap` or `--boundary`, other two types of visulization results can also be generated.
 ## Reproducibility
-The melanocytic skin tumor dataset will be made public in the future. To reproduce the results on TCGA-SKCM dataset, the pretrained model is available at [model]().
+The melanocytic skin tumor dataset will be made public in the future. To reproduce the results on TCGA-SKCM dataset, the pretrained model is available at [model]() (for anonymization, the link will be provided after paper review).
 
 ## Issues
 - Please report all issues on the public forum.
