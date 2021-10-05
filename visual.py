@@ -241,6 +241,7 @@ def get_visual(wsi_dir, score_save_dir, overlay_save_dir, args):
     
     for i in range(len(slide_ids)):
         slide_id = slide_ids[i]
+        
         if args.heatmap:
             outputPath = os.path.join(overlay_save_dir,slide_id+'_heat_'+args.exp_name+'.tiff')
         elif args.boundary:
@@ -346,7 +347,6 @@ os.makedirs(overlay_save_dir, exist_ok=True)
 # Create visualization map
 print("=====>Get Visualization Results")
 get_visual(wsi_dir, score_save_dir, overlay_save_dir, args)
-
 
 
 
