@@ -51,10 +51,11 @@ Step 2: calculate predicted scores for all extracted patches.
 ```
 python score.py --exp_name 'pcla_3class' --auto_skip --model_load TRAINED_MODEL --csv_path PATH_TO_CSV --patch_path PATH_TO_ALL_PATCHES --results_dir PATH_TO_SAVE_RESULTS --classification_save_dir PATH_TO_SAVE_CLASSIFICATION_RESULTS
 ```
-Step 3: generate visualization maps.
+Step 3: generate overlay map.
 ```
 python visual.py --exp_name 'pcla_3class' --csv_path PATH_TO_CSV --wsi_dir PATH_TO_WSI --results_dir PATH_TO_SAVE_RESULTS --xml_dir PATH_TO_GROUND_TRUTH_LABELS
 ```
+By setting `--heatmap` or `--boundary`, other two types of visulization results can also be generated.
 ## Reproducibility
 The melanocytic skin tumor dataset will be made public in the future. To reproduce the results on TCGA-SKCM dataset, the pretrained model is available at [model]().
 
