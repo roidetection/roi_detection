@@ -1,28 +1,25 @@
 import os
-#os.chdir('D:\yaoli\detect_roi')
 import time
 import torch
 import argparse
 import numpy as np
-
 import torch.nn as nn
 import torch.optim as optim
 from tqdm import tqdm
 from torchvision import datasets, transforms
 from torch.utils.data import DataLoader
-
-from models.patch_classifier import instantiate_model
+from utils.patch_classifier import instantiate_model
 
 
 
 parser = argparse.ArgumentParser(description='Feature Extraction')
 parser.add_argument('--model_load', type=str, default=None,
-                        help='path to the wsi_classifier to load')
-parser.add_argument('--data_folder', type=str, default='/pine/scr/y/a/yaoli/data/melanoma/annotated/features',
-                        help='path to the dataset')
+                        help='path to the pre-trained classifier to load')
+parser.add_argument('--data_folder', type=str, default=None,
+                        help='path to the annotated patches')
 parser.add_argument('--exp_name', type=str, default='pcla_3class',
                         help='name of this experiment')
-parser.add_argument('--batch_size', type=int, default=100)
+parser.add_argument('--batch_size', type=int, default=256)
 parser.add_argument('--start_epoch', type=int, default=0)
 parser.add_argument('--validate', action='store_false', default=True, help='whether do validation')
 parser.add_argument('--testing', action='store_false', default=True, help='whether do testing')

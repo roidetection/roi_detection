@@ -1,10 +1,12 @@
+"""
+Modified from https://github.com/mahmoodlab/CLAM
+"""
 import os
-#os.chdir('D:\yaoli\detect_roi')
 import numpy as np
 import time
 import argparse
 import pandas as pd
-from wsi_core.WholeSlideImage_new import WholeSlideImage, StitchPatches
+from utils.WholeSlideImage import WholeSlideImage, StitchPatches
 
 def stitching(file_path, downscale = 64):
     start = time.time()
@@ -234,11 +236,11 @@ def seg_and_patch(source, save_dir, patch_save_dir, mask_save_dir, stitch_save_d
     return seg_times, patch_times
 
 parser = argparse.ArgumentParser(description='seg and patch')
-parser.add_argument('--source', type = str, default='/pine/scr/y/a/yaoli/data/melanoma/wsi',
+parser.add_argument('--source', type = str, default=None,
                     help='path to folder containing raw wsi image files.')
-parser.add_argument('--save_dir', type = str, default='/pine/scr/y/a/yaoli/data/melanoma/patches_all',
+parser.add_argument('--save_dir', type = str, default=None,
                     help='directory to save processed data')
-parser.add_argument('--xml_dir', type = str, default='/proj/STOR/yaoli/detect_roi/annotations/new_annotations', 
+parser.add_argument('--xml_dir', type = str, default=None, 
                     help='path to xml files')
 parser.add_argument('--xml', default=False, action='store_true')
 parser.add_argument('--patch', default=False, action='store_true')

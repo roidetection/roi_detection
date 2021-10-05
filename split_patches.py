@@ -1,9 +1,8 @@
 import os
-#os.chdir('D:\yaoli\detect_roi')
 import time
 import argparse
 import pandas as pd
-from datasets.dataset_h5 import Dataset_All_Bags, h5_to_patch
+from utils.dataset_h5 import Dataset_All_Bags, h5_to_patch
 
 
 def log_check_file(logfname):
@@ -49,10 +48,10 @@ def compute_w_loader(file_path, output_path, bag_name, logfname, target_patch_si
 
 
 parser = argparse.ArgumentParser(description='Feature Extraction')
-parser.add_argument('--data_dir', type=str, default=r'D:\yaoli\data\melanoma\annotated\patches')
-parser.add_argument('--other_patches_dir', type=str, default=r'D:\yaoli\data\melanoma\annotated_other\patches')
-parser.add_argument('--csv_path', type=str, default=r'D:\yaoli\detect_roi\dataset_csv\melanoma_binary.csv')
-parser.add_argument('--feat_dir', type=str, default=r'D:\yaoli\data\melanoma\annotated\features')
+parser.add_argument('--data_dir', type=str, default=None)
+parser.add_argument('--other_patches_dir', type=str, default=None)
+parser.add_argument('--csv_path', type=str, default=None)
+parser.add_argument('--feat_dir', type=str, default=None)
 parser.add_argument('--auto_skip', default=False, action='store_true')
 parser.add_argument('--target_patch_size', type=int, default=-1,
                     help='the desired size of patches for optional scaling before feature embedding')

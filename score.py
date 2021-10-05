@@ -1,37 +1,34 @@
 import os
-#os.chdir('D:\yaoli\detect_roi')
 import time
 import torch
 import h5py
 import argparse
 import numpy as np
 import pandas as pd
-
 import torch.nn as nn
 from tqdm import tqdm
 from torchvision import transforms
 from torch.utils.data import DataLoader
-
-from datasets.dataset_h5 import Whole_Slide_BagV2
-from models.patch_classifier import instantiate_model
+from utils.dataset_h5 import Whole_Slide_BagV2
+from utils.patch_classifier import instantiate_model
 
 
 
 parser = argparse.ArgumentParser(description='Feature Extraction')
 parser.add_argument('--exp_name', type=str, default='pcla_3class',help='experiment code for saving results')
-parser.add_argument('--model_load', type=str, default='pcla_3class_epoch18_loss0.077_acc0.97.pt',
-                        help='path to the wsi_classifier to load')
-parser.add_argument('--csv_path', type=str, default=r'D:\yaoli\detect_roi\dataset_csv\melanoma_binary.csv',
+parser.add_argument('--model_load', type=str, default=None,
+                        help='path to the trained patch classifier')
+parser.add_argument('--csv_path', type=str, default=None,
                         help='name of csv file that contains WSI slide ids')
-parser.add_argument('--patch_path', type=str, default=r'D:\yaoli\data\melanoma\patches_all\patches',
+parser.add_argument('--patch_path', type=str, default=None,
                         help='path to the patches')
-parser.add_argument('--batch_size', type=int, default=100)
-parser.add_argument('--results_dir', type=str, default='/pine/scr/y/a/yaoli/data/melanoma',
-                        help='folder in which to save model')
-parser.add_argument('--classification_save_dir', type=str, default=r'D:\yaoli\detect_roi\dataset_csv',
-                        help='folder in which to save model')
+parser.add_argument('--batch_size', type=int, default=256)
+parser.add_argument('--results_dir', type=str, default=None,
+                        help='folder in which to save results')
+parser.add_argument('--classification_save_dir', type=str, default=None,
+                        help='folder in which to save classification csv')
 parser.add_argument('--models_save_folder', type=str, default='./saved_models/',
-                        help='folder in which to save model')
+                        help='folder in model is saved')
 parser.add_argument('--num_class', type=int, default=3)
 parser.add_argument('--auto_skip', default=False, action='store_true')
 args = parser.parse_args()
@@ -69,7 +66,7 @@ def get_score(args, model, trans_test):
     for i in range(len(slide_ids)):
         
         slide_id = slide_ids[i]
-        save_name = os.path.join(args.results_dir, 'attention', slide_id+'.h5')
+        save_name = os.path.join(args.results_dir, 'score', slide_id+'.h5')
         if args.auto_skip and os.path.isfile(save_name):
             print('{} already exist in destination location, skipped'.format(slide_id))
             continue
@@ -137,7 +134,7 @@ if __name__ == '__main__':
     model, input_width = instantiate_model('vgg16', True, args.num_class)
     
     os.makedirs(os.path.join(args.results_dir), exist_ok=True)
-    os.makedirs(os.path.join(args.results_dir, 'attention'), exist_ok=True)
+    os.makedirs(os.path.join(args.results_dir, 'score'), exist_ok=True)
             
     if torch.cuda.device_count() > 1:
         model = nn.DataParallel(model)
