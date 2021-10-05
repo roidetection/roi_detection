@@ -6,7 +6,7 @@
 ## Overview
 Automated region of interest detection in histopathological image analysis is a challenging and important topic with tremendous potential impact in clinical practice. In this paper, we aim to address one important question: How to perform automated region of interest detection in melanocytic skin tumor (*melanoma* and *nevus*) whole slide images? We work with a dataset that contains 161 melanocytic skin tumor images, including *melanomas* (skin cancer) and *nevi* (benign moles), and propose a patch-based region of interest detection method, which achieves better performance than other unsupervised and supervised methods on the melanocytic skin tumor images.
 
-<img src="https://github.com/roidetection/roi_detection/blob/master/main_fig.jpg" width="1024"/>
+![plot](./pics/task.jpg)
 
 ## Setup
 
