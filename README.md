@@ -1,7 +1,7 @@
 # Region of Interest Detection in Melanocytic Skin Tumor Whole Slide Images
 
 ## Updates:
-* 10/04/2021: Submitted to ISBI 2022. See visualization results on TCGA-SKCM at [following link]()
+* 10/04/2021: Submitted to ISBI 2022. See visualization results on TCGA-SKCM in folder TCGA_visual.
 
 ## Overview
 Automated region of interest detection in histopathological image analysis is a challenging and important topic with tremendous potential impact in clinical practice. In this paper, we aim to address one important question: How to perform automated region of interest detection in melanocytic skin tumor (*melanoma* and *nevus*) whole slide images? We work with a dataset that contains 161 melanocytic skin tumor images, including *melanomas* (skin cancer) and *nevi* (benign moles), and propose a patch-based region of interest detection method, which achieves better performance than other unsupervised and supervised methods on the melanocytic skin tumor images.
@@ -57,7 +57,7 @@ python visual.py --exp_name 'pcla_3class' --csv_path PATH_TO_CSV --wsi_dir PATH_
 ```
 By setting `--heatmap` or `--boundary`, other two types of visulization results can also be generated.
 ## Reproducibility
-The melanocytic skin tumor dataset will be made public in the future. To reproduce the results on TCGA-SKCM dataset, the pretrained model is available at [model]().
+The melanocytic skin tumor dataset will be made public in the future. To reproduce the results on TCGA-SKCM dataset, the pretrained model is available in model folder.
 
 ## Issues
 - Please report all issues on the public forum.
