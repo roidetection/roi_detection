@@ -14,3 +14,6 @@ To better evaluate the method, the model is deployed to the TCGA skin cancer dat
 
 <img src="./images/TCGA-D3-A8GC-06Z-00-DX1_F46C95E6-FF24-431F-9E86-1C29CE71524D.png" width="400"> <img src="./images/TCGA-D3-A8GC-06Z-00-DX1_F46C95E6-FF24-431F-9E86-1C29CE71524D_heat_.png" width="400">
 
+## Results on Other Example
+
+<img src="./images/TCGA-D3-A3C1-06Z-00-DX1_F6C5DABC-9FEB-4A55-A764-6958046CFE39.png" width="400"> <img src="./images/TCGA-D3-A3C1-06Z-00-DX1_F6C5DABC-9FEB-4A55-A764-6958046CFE39_heat_.png" width="400">
